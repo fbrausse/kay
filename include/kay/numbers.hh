@@ -34,6 +34,7 @@ using Q = flintxx::Q;
 
 using flintxx::ui_pow_ui;
 
+inline mpz_class to_mpz_class(const Z &z) { return static_cast<mpz_class>(z); }
 inline mpq_class to_mpq_class(const Q &q) { return static_cast<mpq_class>(q); }
 
 }
@@ -70,6 +71,9 @@ inline void canonicalize(Q &v)
 {
 	v.canonicalize();
 }
+
+inline const mpz_class & to_mpz_class(const Z &z) { return z; }
+inline       mpz_class & to_mpz_class(      Z &z) { return z; }
 
 inline const mpq_class & to_mpq_class(const Q &q) { return q; }
 inline       mpq_class & to_mpq_class(      Q &q) { return q; }
