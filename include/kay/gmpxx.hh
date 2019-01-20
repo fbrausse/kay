@@ -10,10 +10,24 @@
 #ifndef KAY_GMPXX_HH
 #define KAY_GMPXX_HH
 
-#include <gmpxx.h>
-#include <mpfr.h>	/* mpfr_t */
+#if __has_include(<gmpxx.h>)
+# define KAY_HAVE_GMPXX 1
+#endif
 
-#include "kay/bits.hh"
+#if __has_include(<mpfr.h>)
+# define KAY_HAVE_MPFR 1
+#endif
+
+#if KAY_HAVE_GMPXX
+# include <gmpxx.h>
+#endif
+#if KAY_HAVE_MPFR
+# include <mpfr.h>	/* mpfr_t */
+#endif
+
+#if KAY_HAVE_GMPXX
+
+#include <kay/bits.hh>
 
 namespace kay {
 
@@ -45,6 +59,8 @@ inline mpz_class round(const mpq_class &q)
 	return kay::floor(q+mpq_class(1,2));
 }
 
+#if KAY_HAVE_MPFR
+
 inline int mpfr_set_q(mpfr_t dest, const mpq_class &src, mpfr_rnd_t rnd)
 {
 	return mpfr_set_q(dest, src.get_mpq_t(), rnd);
@@ -54,6 +70,8 @@ inline int mpfr_sub_q(mpfr_t r, mpfr_t a, const mpq_class &b, mpfr_rnd_t rnd)
 {
 	return mpfr_sub_q(r, a, b.get_mpq_t(), rnd);
 }
+
+#endif /* KAY_HAVE_MPFR */
 
 }
 
@@ -102,5 +120,7 @@ struct hash<mpq_class> : hash<mpz_class> {
 };
 
 }
+
+#endif /* KAY_HAVE_GMPXX */
 
 #endif

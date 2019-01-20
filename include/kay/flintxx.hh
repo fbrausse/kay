@@ -10,13 +10,19 @@
 #ifndef KAY_FLINTXX_HH
 #define KAY_FLINTXX_HH
 
+#if __has_include(<flint/fmpz.h>) && __has_include(<flint/fmpq.h>)
+# define KAY_HAVE_FLINT 1
+#endif
+
+#include <kay/gmpxx.hh>
+
+#if KAY_HAVE_FLINT && KAY_HAVE_GMPXX
+
 #include <utility>	/* std::swap */
 #include <ostream>
 
 #include <flint/fmpz.h>
 #include <flint/fmpq.h>
-
-#include "kay/gmpxx.hh"
 
 namespace kay::flintxx {
 
@@ -417,5 +423,7 @@ protected:
 };
 
 }
+
+#endif /* KAY_HAVE_FLINT && KAY_HAVE_GMPXX */
 
 #endif

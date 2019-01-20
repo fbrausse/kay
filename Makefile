@@ -6,6 +6,7 @@ HEADERS = \
 	kay/bits.hh \
 	kay/gmpxx.hh \
 	kay/flintxx.hh \
+	kay/numbers.hh \
 
 .PHONY: install uninstall clean
 
