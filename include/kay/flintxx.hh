@@ -31,9 +31,9 @@ class Z {
 	fmpz z;
 
 public:
-	Z()                      { fmpz_init(get_fmpz_t()); }
-	Z(const Z &v)            { fmpz_init_set(get_fmpz_t(), v.get_fmpz_t()); }
-	Z(Z &&v)                 : z(v.z) { v.z = 0; /* flint internals: 0 is not alloc'ed */ }
+	Z()           noexcept   { fmpz_init(get_fmpz_t()); }
+	Z(const Z &v) noexcept   { fmpz_init_set(get_fmpz_t(), v.get_fmpz_t()); }
+	Z(Z &&v)      noexcept   : z(v.z) { v.z = 0; /* flint internals: 0 is not alloc'ed */ }
 
 #if COEFF_MIN <= INT_MIN && INT_MAX <= COEFF_MAX
 	Z(signed v)              : z(v) {}
@@ -60,8 +60,8 @@ public:
 		fmpz_swap(a.get_fmpz_t(), b.get_fmpz_t());
 	}
 
-	Z & operator=(const Z &v) { fmpz_set(get_fmpz_t(), v.get_fmpz_t()); return *this; }
-	Z & operator=(Z &&v)      { swap(*this, v); return *this; }
+	Z & operator=(const Z &v) noexcept { fmpz_set(get_fmpz_t(), v.get_fmpz_t()); return *this; }
+	Z & operator=(Z &&v)      noexcept { swap(*this, v); return *this; }
 
 	      fmpz * get_fmpz_t()       { return &z; }
 	const fmpz * get_fmpz_t() const { return &z; }
@@ -196,11 +196,11 @@ struct Q {
 	Z num;
 	Z den;
 
-	Q()             : num(), den(1U) {}
-	Q(const Q &v)   = default;
-	Q(Q &&v)        = default;
-	Q(Z num)        : num(std::move(num))
-	                , den(1) {}
+	Q()           noexcept : num(), den(1U) {}
+	Q(const Q &v) noexcept = default;
+	Q(Q &&v)      noexcept = default;
+	Q(Z num)               : num(std::move(num))
+	                       , den(1) {}
 
 	Q(const Z &num, const Z &den)
 	: Q()
