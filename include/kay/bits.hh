@@ -80,6 +80,62 @@ template <> struct cardinality<bool> : std::integral_constant<size_t,2> {};
 static_assert(max_bits_v<unit> == 0);
 static_assert(max_bits_v<bool> == 1);
 
+template <size_t tag_sz, typename I, typename T,
+          typename = std::enable_if<(bits_v<I> > tag_sz)>>
+struct tagged_idx_base {
+
+	static constexpr size_t idx_size = bits_v<I>;
+	static constexpr size_t tag_size = tag_sz;
+
+	union {
+		I v;
+		struct {
+			I idx : bits_v<I> - tag_sz;
+			T cat : tag_sz;
+		};
+	};
+
+	tagged_idx_base() {};
+	tagged_idx_base(I idx, T cat) : idx(idx), cat(cat) {}
+
+	constexpr friend bool operator==(const tagged_idx_base &a,
+	                                 const tagged_idx_base &b)
+	{ return a.v == b.v; }
+
+	constexpr friend bool operator!=(const tagged_idx_base &a,
+	                                 const tagged_idx_base &b)
+	{ return a.v != b.v; }
+
+	constexpr friend bool operator< (const tagged_idx_base &a,
+	                                 const tagged_idx_base &b)
+	{ return a.v <  b.v; }
+};
+
+template <typename I, typename T>
+struct tagged_idx_base<0,I,T> {
+
+	union {
+		I v;
+		struct { I idx; };
+	};
+
+	constexpr friend bool operator==(const tagged_idx_base &a,
+	                                 const tagged_idx_base &b)
+	{ return a.v == b.v; }
+
+	constexpr friend bool operator!=(const tagged_idx_base &a,
+	                                 const tagged_idx_base &b)
+	{ return a.v != b.v; }
+
+	constexpr friend bool operator< (const tagged_idx_base &a,
+	                                 const tagged_idx_base &b)
+	{ return a.v <  b.v; }
+};
+
+template <typename T, typename I = uint32_t>
+using tagged_idx = std::enable_if_t<sizeof(tagged_idx_base<max_bits_v<T>, I, T>) == sizeof(I)
+                                   ,tagged_idx_base<max_bits_v<T>, I, T>>;
+
 }
 
 #endif
