@@ -12,6 +12,8 @@
 
 #include <cstdint>
 #include <climits>	/* CHAR_BIT */
+#include <cstddef>	/* size_t */
+#include <type_traits>	/* std::integral_constant */
 
 namespace kay {
 
