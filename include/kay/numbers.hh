@@ -106,7 +106,7 @@ template <size_t b,char... cs> struct base : cnst<1> {};
 template <size_t b,char c, char... cs>
 struct base<b,c,cs...> : cnst<b*base<b,cs...>::value> {};
 
-template <size_t b,char... cs> struct parse2 : cnst<0> {};
+template <size_t b,char... cs> struct parse2;
 template <char... cs> struct parse2<0,'0','x',cs...> : parse2<16,cs...> {};
 template <char... cs> struct parse2<0,'0','X',cs...> : parse2<16,cs...> {};
 template <char... cs> struct parse2<0,'0','b',cs...> : parse2<2,cs...> {};
@@ -116,8 +116,10 @@ template <char c, char... cs> struct parse2<0,c,cs...> : parse2<10,c,cs...> {};
 template <size_t b,char c, char... cs>
 struct parse2<b,c,cs...>
 : cnst<parse2<b,cs...>::value+alph<b,c>::value*base<b,cs...>::value> {};
+template <size_t b> struct parse2<b> : cnst<0> {};
 
-template <char... cs> using parse = parse2<0,cs...>;
+template <char... cs> struct parse : parse2<0,cs...> {};
+template <char... cs> constexpr size_t parse_v = parse<cs...>::value;
 
 template <size_t v, size_t b>
 struct digits : cnst<(v<b) ? 1 : 1+digits<v/b,b>::value> {};
@@ -165,28 +167,28 @@ struct fits3<max,b,c,cs...>
 
 
 template <typename UL, char... cs>
-struct fits : fits3<std::numeric_limits<UL>::max(),0,cs...> {};
+constexpr bool fits_v = fits3<std::numeric_limits<UL>::max(),0,cs...>::value;
 
-static_assert(fits<unsigned,'0'>::value);
-static_assert(fits<unsigned,'0','0'>::value);
-static_assert((UINT32_MAX-parse<'2','9','4','9','6','7','2','9','6'>::value) == 4e9-1);
-static_assert(fits<uint32_t,'4','2','9','4','9','6','7','2','9','5'>::value);
-static_assert(fits<uint32_t,'0','3','7','7','7','7','7','7','7','7','7','7'>::value);
-static_assert(!fits<uint32_t,'0','4','0','0','0','0','0','0','0','0','0','0'>::value);
-static_assert(fits<uint32_t,'0','x','f','f','f','f','f','f','f','f'>::value);
-static_assert(!fits<uint32_t,'0','x','1','0','0','0','0','0','0','0','0'>::value);
-static_assert(!fits<uint32_t,'4','2','9','4','9','6','7','2','9','6'>::value);
+static_assert(fits_v<unsigned,'0'>);
+static_assert(fits_v<unsigned,'0','0'>);
+static_assert((UINT32_MAX-parse_v<'2','9','4','9','6','7','2','9','6'>) == 4e9-1);
+static_assert(fits_v<uint32_t,'4','2','9','4','9','6','7','2','9','5'>);
+static_assert(fits_v<uint32_t,'0','3','7','7','7','7','7','7','7','7','7','7'>);
+static_assert(!fits_v<uint32_t,'0','4','0','0','0','0','0','0','0','0','0','0'>);
+static_assert(fits_v<uint32_t,'0','x','f','f','f','f','f','f','f','f'>);
+static_assert(!fits_v<uint32_t,'0','x','1','0','0','0','0','0','0','0','0'>);
+static_assert(!fits_v<uint32_t,'4','2','9','4','9','6','7','2','9','6'>);
 
-static_assert(parse<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','5'>::value == 18446744073709551615U);
-static_assert(parse<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','6'>::value == 0);
+static_assert(parse_v<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','5'> == 18446744073709551615U);
+static_assert(parse_v<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','6'> == 0);
 
-
-template <char... cs>
-inline std::enable_if_t<fits<unsigned long,cs...>::value,Z> parse_Z()
-{ return parse<cs...>::value; }
 
 template <char... cs>
-inline std::enable_if_t<!fits<unsigned long,cs...>::value,Z> parse_Z()
+constexpr std::enable_if_t<fits_v<unsigned long,cs...>,Z> parse_Z()
+{ return parse_v<cs...>; }
+
+template <char... cs>
+inline std::enable_if_t<!fits_v<unsigned long,cs...>,Z> parse_Z()
 { char str[] = {cs...,'\0'}; return Z(str); }
 
 };
