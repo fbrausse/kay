@@ -193,8 +193,12 @@ inline std::enable_if_t<!fits_v<unsigned long,cs...>,Z> parse_Z()
 
 };
 
+namespace literals {
+
 template <char... cs>
 inline Z operator""_Z() { return integral_literal_support::parse_Z<cs...>(); }
+
+}
 
 }
 
