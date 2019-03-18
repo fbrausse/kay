@@ -13,6 +13,7 @@
 #include <kay/bits.hh>
 #include <kay/gmpxx.hh>
 #include <kay/flintxx.hh>
+#include <kay/compiletime.hh>
 
 #if !defined(KAY_USE_FLINT) && !defined(KAY_USE_GMPXX)
 # if KAY_HAVE_FLINT

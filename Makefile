@@ -4,6 +4,7 @@ INSTALL  = install
 
 HEADERS = \
 	kay/bits.hh \
+	kay/compiletime.hh \
 	kay/gmpxx.hh \
 	kay/flintxx.hh \
 	kay/numbers.hh \
