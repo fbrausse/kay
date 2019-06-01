@@ -14,6 +14,7 @@
 #include <climits>	/* CHAR_BIT */
 #include <cstddef>	/* size_t */
 #include <type_traits>	/* std::integral_constant */
+#include <variant>	/* std::monostate */
 
 namespace kay {
 
@@ -67,7 +68,7 @@ template <typename T> constexpr size_t cardinality_v = cardinality<T>::value;
 template <typename T> struct max_bits : ceil_log2<cardinality_v<T>> {};
 template <typename T> constexpr size_t max_bits_v = max_bits<T>::value;
 
-struct unit {};
+using unit = std::monostate;
 
 template <typename T> struct cardinality
 : std::enable_if_t<(bits_v<size_t> >= max_bits_v<T>)
