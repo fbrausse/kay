@@ -79,6 +79,8 @@ inline       mpz_class & to_mpz_class(      Z &z) { return z; }
 inline const mpq_class & to_mpq_class(const Q &q) { return q; }
 inline       mpq_class & to_mpq_class(      Q &q) { return q; }
 
+inline const mpq_class   inv(mpq_class q) { return 1/q; }
+
 }
 
 #else
