@@ -92,6 +92,12 @@ public:
 	friend Z operator~(Z a) { fmpz_complement(a.get_fmpz_t(), a.get_fmpz_t()); return a; }
 	friend Z operator-(Z a) { neg(a); return a; }
 
+	Z & operator++()    { *this += 1; return *this; }
+	Z   operator++(int) { Z old = *this; ++*this; return old; }
+
+	Z & operator--()    { *this -= 1; return *this; }
+	Z   operator--(int) { Z old = *this; --*this; return old; }
+
 	friend Z & operator+=(Z &a, const Z &b)
 	{ fmpz_add(a.get_fmpz_t(), a.get_fmpz_t(), b.get_fmpz_t()); return a; }
 	friend Z   operator+ (Z  a, const Z &b) { a += b; return a; }
@@ -270,6 +276,12 @@ struct Q {
 	friend Q operator+(Q a) { return a; }
 	friend Q operator-(Q a) { neg(a); return a; }
 
+	Q & operator++()    { num += den; return *this; }
+	Q   operator++(int) { Q old = *this; ++*this; return old; }
+
+	Q & operator--()    { num -= den; return *this; }
+	Q   operator--(int) { Q old = *this; --*this; return old; }
+
 	friend Q & operator+=(Q &a, const Q &b)
 	{ fmpq_add(a.get_fmpq_t(), a.get_fmpq_t(), b.get_fmpq_t()); return a; }
 	friend Q   operator+ (Q  a, const Q &b) { a += b; return a; }
@@ -345,6 +357,14 @@ struct Q {
 	{
 		Z r;
 		fmpz_fdiv_q(r.get_fmpz_t(), q.get_num().get_fmpz_t(),
+		                            q.get_den().get_fmpz_t());
+		return r;
+	}
+
+	friend Z ceil(const Q &q)
+	{
+		Z r;
+		fmpz_cdiv_q(r.get_fmpz_t(), q.get_num().get_fmpz_t(),
 		                            q.get_den().get_fmpz_t());
 		return r;
 	}
