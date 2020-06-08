@@ -54,6 +54,18 @@ inline mpz_class floor(const mpq_class &q)
 	return z;
 }
 
+inline void ceil(mpz_class &i, const mpq_class &q)
+{
+	mpz_cdiv_q(i.get_mpz_t(), q.get_num_mpz_t(), q.get_den_mpz_t());
+}
+
+inline mpz_class ceil(const mpq_class &q)
+{
+	mpz_class z;
+	ceil(z, q);
+	return z;
+}
+
 inline mpz_class round(const mpq_class &q)
 {
 	return kay::floor(q+mpq_class(1,2));

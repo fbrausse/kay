@@ -89,6 +89,22 @@ inline const mpq_class   inv(mpq_class q) { return 1/q; }
 
 namespace kay {
 
+/* parses stuff like "0.85" */
+static Q Q_from_str(char *rep, unsigned base = 10)
+{
+	char *dot = strchr(rep, '.');
+	Q divisor = 1;
+	if (dot) {
+		unsigned frac_len = strlen(dot+1);
+		divisor = ui_pow_ui(base, frac_len);
+		memmove(dot, dot+1, frac_len+1);
+	}
+	Q r(rep, base);
+	r /= divisor;
+	return r;
+}
+
+
 namespace integral_literal_support {
 
 template <size_t v> using cnst = std::integral_constant<size_t,v>;
