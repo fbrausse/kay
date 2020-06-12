@@ -161,6 +161,8 @@ public:
 
 	friend mp_bitcnt_t bits(const Z &a) { return fmpz_bits(a.get_fmpz_t()); }
 
+	friend mp_bitcnt_t ctz(const Z &a) { return fmpz_val2(a.get_fmpz_t()); }
+
 	friend bool operator==(const Z &a, const Z &b) { return cmp(a, b) == 0; }
 	friend bool operator!=(const Z &a, const Z &b) { return cmp(a, b) != 0; }
 	friend bool operator<=(const Z &a, const Z &b) { return cmp(a, b) <= 0; }

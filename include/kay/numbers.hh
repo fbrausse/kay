@@ -81,6 +81,8 @@ inline       mpq_class & to_mpq_class(      Q &q) { return q; }
 
 inline const mpq_class   inv(mpq_class q) { return 1/q; }
 
+inline       mp_bitcnt_t ctz(const mpz_class &v) { return mpz_scan1(v.get_mpz_t(), 0); }
+
 }
 
 #else
