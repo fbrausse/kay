@@ -1,3 +1,11 @@
+/*
+ * numbits.hh
+ *
+ * Copyright 2020 Franz Brauße <brausse@informatik.uni-trier.de>
+ *
+ * This file is part of kay.
+ * See the LICENSE file for terms of distribution.
+ */
 
 #ifndef KAY_NUM_BITS_HH
 #define KAY_NUM_BITS_HH
