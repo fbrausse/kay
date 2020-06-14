@@ -92,7 +92,7 @@ inline       mp_bitcnt_t ctz(const mpz_class &v) { return mpz_scan1(v.get_mpz_t(
 namespace kay {
 
 /* parses stuff like "0.85" */
-static Q Q_from_str(char *rep, unsigned base = 10)
+static inline Q Q_from_str(char *rep, unsigned base = 10)
 {
 	char *dot = strchr(rep, '.');
 	Q divisor = 1;
