@@ -118,6 +118,19 @@ public:
 	{ fmpz_mod(a.get_fmpz_t(), a.get_fmpz_t(), b.get_fmpz_t()); return a; }
 	friend Z   operator% (Z  a, const Z &b) { a %= b; return a; }
 
+	template <typename T
+	         ,typename = std::enable_if_t<std::is_unsigned_v<std::remove_cv_t<T>> &&
+	                                      (type_bits_v<std::remove_cv_t<T>> <=
+	                                       type_bits_v<::ulong>) &&
+	                                      std::is_convertible_v<T,::ulong> &&
+	                                      std::is_convertible_v<::ulong,T>>>
+	friend T   operator% (Z  a, const T &b)
+	{
+		/* flint naming sometimes is strange, this is the modulo
+		 * operation, though. */
+		return fmpz_fdiv_ui(a.get_fmpz_t(), b);
+	}
+
 	friend Z & operator<<=(Z &a, mp_bitcnt_t e)
 	{ fmpz_mul_2exp(a.get_fmpz_t(), a.get_fmpz_t(), e); return a; }
 	friend Z   operator<< (Z  a, mp_bitcnt_t e) { a <<= e; return a; }
