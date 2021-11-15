@@ -55,6 +55,12 @@ inline Z ui_pow_ui(unsigned long base, unsigned long exp)
 	return r;
 }
 
+inline Z pow(Z x, unsigned long n)
+{
+	mpz_pow_ui(x.get_mpz_t(), x.get_mpz_t(), n);
+	return x;
+}
+
 inline Q pow(Q x, unsigned long n)
 {
 	mpz_pow_ui(x.get_num_mpz_t(), x.get_num_mpz_t(), n);
