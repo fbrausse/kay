@@ -52,6 +52,77 @@ template <typename T> struct fnv1a_hash : fnv1_hash_params<T> {
 	}
 };
 
+template <typename T, typename H>
+struct hash
+{
+	static_assert(H::template is_std<T>, "specialization of kay::hash required");
+
+	constexpr size_t operator()(const T &x) const noexcept
+	{
+		return H(x).v;
+	}
+};
+
+template <template <typename> typename Std>
+struct hash_base : private fnv1a_hash<size_t> {
+
+	template <typename T> static const constexpr bool is_std = Std<T>::value;
+
+	size_t v;
+	template <typename T>
+	hash_base(const T &t)
+	{
+		if constexpr (Std<T>::value) {
+			v = std::hash<T>{}(t);
+		} else
+			v = hash<T,hash_base<Std>>{}(t);
+	}
+	hash_base() : v(offset_basis) {}
+	friend hash_base operator^(const hash_base &a, const hash_base &b)
+	{
+		return fnv1a_hash<size_t>::combine(a.v, b.v);
+	}
+	friend hash_base & operator^=(hash_base &a, const hash_base &b)
+	{
+		return a = a ^ b;
+	}
+};
+
+template <typename... Ts, typename H> struct hash<std::tuple<Ts...>,H> {
+
+	template <size_t... Is>
+	constexpr size_t do_hash(const std::tuple<Ts...> &t,
+	                         std::index_sequence<Is...>) const noexcept
+	{
+		return (H() ^ ... ^ H(std::get<Is>(t))).v;
+	}
+
+	constexpr size_t operator()(const std::tuple<Ts...> &t) const noexcept
+	{
+		return do_hash(t, std::make_index_sequence<sizeof...(Ts)>{});
+	}
+};
+
+template <typename T, typename H> struct hash<std::vector<T>,H> {
+
+	size_t operator()(const std::vector<T> &v) const noexcept
+	{
+		H h(size(v));
+		for (const T &x : v)
+			h ^= H(x);
+		return h.v;
+	}
+};
+
+template <typename T> struct hash_std_default
+: std::disjunction<std::is_integral<std::remove_cv_t<T>>, std::is_pointer<T>>
+{};
+
+template <typename T, template <typename> typename Std = hash_std_default>
+static inline size_t do_hash(const T &v) { return hash<T,hash_base<Std>>{}(v); }
+
+
+
 template <size_t n> struct ceil_log2;
 template <size_t n> constexpr size_t ceil_log2_v = ceil_log2<n>::value;
 template <> struct ceil_log2<1> : std::integral_constant<size_t,0> {};
