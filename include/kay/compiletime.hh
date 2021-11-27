@@ -182,12 +182,12 @@ static_assert(N<1>{} + N<2>{} == N<3,0,0,0,0>{});
 namespace detail {
 
 /* mul1: multiply limb by natural number */
-template <size_t a, typename B> struct imul1;
-template <size_t a, typename B> using imul1_t = typename imul1<a,B>::type;
+template <uint64_t a, typename B> struct imul1;
+template <uint64_t a, typename B> using imul1_t = typename imul1<a,B>::type;
 template <uint64_t a> struct imul1<a,L<>> {
 	using type = N<>;
 };
-template <uint64_t a, uint64_t b, size_t... Bs> struct imul1<a,L<b,Bs...>> {
+template <uint64_t a, uint64_t b, uint64_t... Bs> struct imul1<a,L<b,Bs...>> {
 private:
 	static constexpr uint64_t lo(uint64_t v) { return v & 0xffff'ffff; }
 	static constexpr uint64_t hi(uint64_t v) { return v >> 32; }
@@ -223,7 +223,7 @@ template <typename A, typename B> using mul_t = typename mul<A,B>::type;
 template <typename B> struct mul<L<>,B> {
 	using type = N<>;
 };
-template <size_t a, size_t... As, typename B> struct mul<L<a,As...>,B> {
+template <uint64_t a, uint64_t... As, typename B> struct mul<L<a,As...>,B> {
 	using type = add_t<imul1_t<a,B>,concat1_t<0,mul_t<L<As...>,B>>>;
 };
 

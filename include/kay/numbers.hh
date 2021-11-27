@@ -158,8 +158,8 @@ static_assert(digits<256,16>::value == 3);
 
 static_assert(digits<9,10>::value == 1);
 static_assert(digits<10,10>::value == 2);
-static_assert(digits<~(uint64_t)0,10>::value == 20);
-static_assert(digits<(~(uint64_t)0 >> 2),2>::value == 62);
+static_assert(digits<~(size_t)0,10>::value == (sizeof(size_t) == 4 ? 10 : 20));
+static_assert(digits<(~(size_t)0 >> 2),2>::value == (sizeof(size_t) * CHAR_BIT - 2));
 
 template <char... cs> struct num_nonzero : cnst<sizeof...(cs)> {};
 template <char... cs> struct num_nonzero<'0',cs...> : num_nonzero<cs...> {};
@@ -206,8 +206,10 @@ static_assert(fits_v<uint32_t,'0','x','f','f','f','f','f','f','f','f'>);
 static_assert(!fits_v<uint32_t,'0','x','1','0','0','0','0','0','0','0','0'>);
 static_assert(!fits_v<uint32_t,'4','2','9','4','9','6','7','2','9','6'>);
 
-static_assert(parse_v<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','5'> == 18446744073709551615U);
-static_assert(parse_v<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','6'> == 0);
+
+static_assert(sizeof(size_t) != 8 || parse_v<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','5'> == 18446744073709551615U);
+static_assert(sizeof(size_t) != 4 || parse_v<'4','2','9','4','9','6','7','2','9','5'> == 4294967295U);
+static_assert(sizeof(size_t) > 8 || parse_v<'1','8','4','4','6','7','4','4','0','7','3','7','0','9','5','5','1','6','1','6'> == 0);
 
 
 template <char... cs>
