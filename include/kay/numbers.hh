@@ -126,6 +126,15 @@ static inline Q Q_from_str(char *rep, unsigned base = 10)
 	return r;
 }
 
+inline Q scale(Q v, ssize_t n)
+{
+	if (n > 0)
+		v <<= n;
+	else if (n)
+		v >>= -n;
+	return v;
+}
+
 
 namespace integral_literal_support {
 
