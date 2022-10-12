@@ -100,6 +100,12 @@ namespace kay {
 /* parses stuff like "0.85" */
 static inline Q Q_from_str(char *rep, unsigned base = 10)
 {
+	const char *elit = base == 10 ? "eE" : base == 16 ? "p" : nullptr;
+	char *e = rep + (elit ? strcspn(rep, elit) : 0);
+	if (*e)
+		*e++ = '\0';
+	else
+		e = NULL;
 	char *dot = strchr(rep, '.');
 	Q divisor = 1;
 	if (dot) {
@@ -109,6 +115,14 @@ static inline Q Q_from_str(char *rep, unsigned base = 10)
 	}
 	Q r(rep, base);
 	r /= divisor;
+	if (e) {
+		long g = strtol(e, NULL, base);
+		Z f = pow(Z(base), labs(g));
+		if (g < 0)
+			r /= f;
+		else
+			r *= f;
+	}
 	return r;
 }
 
