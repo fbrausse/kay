@@ -15,6 +15,7 @@
 #include <cstddef>	/* size_t */
 #include <type_traits>	/* std::integral_constant */
 #include <variant>	/* std::monostate */
+#include <vector>	/* std::vector */
 
 namespace kay {
 
