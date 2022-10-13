@@ -426,6 +426,16 @@ static_assert((void *)&((Q *)nullptr)->get_num() == (void *)&((fmpq *)nullptr)->
 static_assert((void *)&((Q *)nullptr)->get_den() == (void *)&((fmpq *)nullptr)->den);
 */
 
+namespace _detail {
+struct destructor {
+	~destructor() { flint_cleanup(); }
+};
+
+inline thread_local destructor thread_dtor;
+inline destructor main_dtor;
+
+}
+
 /* TODO: algebraic numbers using fmpz_poly */
 
 }
