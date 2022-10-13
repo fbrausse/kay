@@ -12,7 +12,7 @@ HEADERS = \
 
 .PHONY: install uninstall clean
 
-$(DESTDIR)/include/%: include/% | $(DESTDIR)/include/
+$(DESTDIR)/include/%: include/% | $(DESTDIR)/include/kay/
 	$(INSTALL) -m 0644 $< $@
 
 install: $(addprefix $(DESTDIR)/include/,$(HEADERS))
