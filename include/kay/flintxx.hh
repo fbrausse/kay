@@ -187,7 +187,13 @@ public:
 	friend bool operator>=(const Z &a, const Z &b) { return cmp(a, b) >= 0; }
 	friend bool operator> (const Z &a, const Z &b) { return cmp(a, b) >  0; }
 
-	std::string get_str(int base=10) const { return fmpz_get_str(NULL, base, get_fmpz_t()); }
+	std::string get_str(int base=10) const
+	{
+		char *c = fmpz_get_str(NULL, base, get_fmpz_t());
+		std::string r(c);
+		flint_free(c);
+		return r;
+	}
 
 	friend std::ostream & operator<<(std::ostream &os, const Z &v)
 	{
@@ -352,7 +358,13 @@ struct Q {
 	/* TODO: rational reconstruction; flint-2.5.2 manual 25.10 */
 	/* TODO: continued fractions; flint-2.5.2 manual 25.12 */
 
-	std::string get_str(int base=10) const { return fmpq_get_str(NULL, base, get_fmpq_t()); }
+	std::string get_str(int base=10) const
+	{
+		char *c = fmpq_get_str(NULL, base, get_fmpq_t());
+		std::string r(c);
+		flint_free(c);
+		return r;
+	}
 
 	/* truncates, i.e. rounds towards zero */
 	double get_d() const
