@@ -53,6 +53,10 @@ public:
 	explicit Z(const char *s, int base=10)
 	: Z() { fmpz_set_str(get_fmpz_t(), s, base); }
 
+	explicit Z(const std::string &s, int base=10)
+	: Z(s.c_str(), base)
+	{}
+
 	~Z() { fmpz_clear(get_fmpz_t()); }
 
 	friend void swap(Z &a, Z &b)
