@@ -71,6 +71,11 @@ inline mpz_class round(const mpq_class &q)
 	return kay::floor(q+mpq_class(1,2));
 }
 
+inline size_t bits(const mpz_class &v)
+{
+	return mpz_sizeinbase(v.get_mpz_t(), 2);
+}
+
 #if KAY_HAVE_MPFR
 
 inline int mpfr_set_q(mpfr_t dest, const mpq_class &src, mpfr_rnd_t rnd)

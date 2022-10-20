@@ -16,7 +16,7 @@
 
 #include <kay/gmpxx.hh>
 
-#if KAY_HAVE_FLINT && KAY_HAVE_GMPXX
+#if KAY_HAVE_FLINT && KAY_HAVE_GMPXX && !defined(KAY_USE_GMPXX)
 
 #include <utility>	/* std::swap */
 #include <ostream>
@@ -206,8 +206,8 @@ public:
 			os << "+";
 		if (flags & os.showbase)
 			switch (base) {
-			case 8: os << "0";
-			case 16: os << (flags & os.uppercase ? "0X" : "0x");
+			case 8: os << "0"; break;
+			case 16: os << (flags & os.uppercase ? "0X" : "0x"); break;
 			}
 		char *s = fmpz_get_str(NULL, base, v.get_fmpz_t());
 		os << s;
