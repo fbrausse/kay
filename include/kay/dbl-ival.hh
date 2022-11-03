@@ -1,5 +1,5 @@
 /*
- * ival.hh
+ * dbl-ival.hh
  *
  * Copyright 2018-2022 Franz Brauße <fb@paxle.org>
  *
