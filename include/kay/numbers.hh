@@ -20,6 +20,7 @@
 #endif
 
 #include <charconv>	/* std::from_chars_result */
+#include <cassert>
 
 #include <kay/bits.hh>
 #include <kay/gmpxx.hh>
