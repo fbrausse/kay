@@ -10,6 +10,17 @@
 #ifndef KAY_NUMBERS_HH
 #define KAY_NUMBERS_HH
 
+#if defined(__GNUC__)
+/* officially supported by GCC since 4.5, all GNUC-compliant compilers with
+ * C++11-support know about this built-in */
+# define kay_unreachable()	__builtin_unreachable()
+#else
+/* https://stackoverflow.com/questions/6031819/emulating-gccs-builtin-unreachable */
+[[noreturn]] static inline void kay_unreachable() { /* intentional */ }
+#endif
+
+#include <charconv>	/* std::from_chars_result */
+
 #include <kay/bits.hh>
 #include <kay/gmpxx.hh>
 #include <kay/flintxx.hh>
@@ -124,6 +135,100 @@ static inline Q Q_from_str(char *rep, unsigned base = 10)
 			r *= f;
 	}
 	return r;
+}
+
+inline std::from_chars_result
+from_chars(const char *rep, const char *end, Z &v, int base = 0,
+           bool incl_sign = true, bool incl_prefix = true)
+{
+	assert(base > 1);
+	assert(base < 36);
+	if (rep == end)
+		return { rep, std::errc::invalid_argument };
+	bool is_neg = false;
+	const char *st = rep;
+	if (incl_sign) {
+		is_neg = *st == '-';
+		if (strchr("+-", *st))
+			st++;
+	}
+	if (st == end || !isdigit(*st))
+		return { rep, std::errc::invalid_argument };
+	if (incl_prefix) {
+		int new_base;
+		if (end - rep >= 2 && st[0] == '0' && tolower(st[1]) == 'x') {
+			new_base = 16;
+			st += 2;
+		} else if (st[0] == '0') {
+			new_base = 8;
+			st += 1;
+		} else
+			new_base = 10;
+		if (base && base != new_base)
+			return { rep, std::errc::invalid_argument };
+		base = new_base;
+	}
+	if (st == end || !isdigit(*st))
+		return { rep, std::errc::invalid_argument };
+	v = 0;
+	const char *beg = st;
+	for (; st < end; st++) {
+		char c = tolower(*st);
+		int digit;
+		if ('0' <= c && c <= '9')
+			digit = c - '0';
+		else if ('a' <= c && c <= 'z')
+			digit = 10 + (c - 'a');
+		else
+			break;
+		if (digit >= base)
+			break;
+		v *= base;
+		v += digit;
+	}
+	if (beg == st)
+		return { rep, std::errc::invalid_argument };
+	if (is_neg)
+		neg(v);
+	return { st, std::errc {} };
+}
+
+inline std::from_chars_result
+from_chars(const char *rep, const char *end, Q &v, int base = 10)
+{
+	v = 0;
+	auto [ze,zr] = from_chars(rep, end, v.get_num(), base, true, false);
+	if (ze == end || zr != std::errc {})
+		return { ze, zr };
+	assert(ze < end);
+	const char *st = ze;
+	if (*st == '.' && isdigit(st[1])) {
+		Z f;
+		auto [fe,fr] = from_chars(st + 1, end, f, base, false, false);
+		if (fr != std::errc {}) {
+			end = st;
+		} else {
+			size_t frac_len = fe - (ze + 1);
+			v += Q(v < 0 ? -f : f, ui_pow_ui(base, frac_len));
+			st = fe;
+		}
+	}
+	const char *elit = base == 10 ? "eE" : base == 16 ? "p" : nullptr;
+	if (st < end && elit && strchr(elit, *st)) {
+		long e;
+		auto [ee,er] = std::from_chars(st + 1, end, e, base);
+		if (er != std::errc {}) {
+			end = st;
+		} else {
+			Z f = pow(Z(base), labs(e));
+			if (e < 0)
+				v /= f;
+			else
+				v *= f;
+			st = ee;
+		}
+	}
+	return { st, std::errc {} };
 }
 
 inline Q scale(Q v, ssize_t n)

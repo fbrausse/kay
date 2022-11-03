@@ -9,16 +9,17 @@ HEADERS = \
 	kay/flintxx.hh \
 	kay/numbers.hh \
 	kay/numbits.hh \
+	kay/dbl-ival.hh \
 
 .PHONY: install uninstall clean
+
+$(DESTDIR)/%/:
+	mkdir -p $@
 
 $(DESTDIR)/include/%: include/% | $(DESTDIR)/include/kay/
 	$(INSTALL) -m 0644 $< $@
 
 install: $(addprefix $(DESTDIR)/include/,$(HEADERS))
-
-$(DESTDIR)/%/:
-	mkdir -p $@
 
 uninstall:
 	$(RM) $(addprefix $(DESTDIR)/include/,$(HEADERS))
