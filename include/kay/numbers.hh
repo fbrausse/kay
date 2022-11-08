@@ -197,10 +197,19 @@ from_chars(const char *rep, const char *end, Z &v, int base = 0,
 inline std::from_chars_result
 from_chars(const char *rep, const char *end, Q &v, int base = 10)
 {
+	const char *beg = rep;
+	bool is_neg = *rep == '-';
+	if (strchr("+-", *rep))
+		rep++;
 	v = 0;
 	auto [ze,zr] = from_chars(rep, end, v.get_num(), base, true, false);
-	if (ze == end || zr != std::errc {})
+	if (zr != std::errc {})
+		return { beg, zr };
+	if (ze == end) {
+		if (is_neg)
+			neg(v);
 		return { ze, zr };
+	}
 	assert(ze < end);
 	const char *st = ze;
 	if (*st == '.' && isdigit(st[1])) {
@@ -229,6 +238,8 @@ from_chars(const char *rep, const char *end, Q &v, int base = 10)
 			st = ee;
 		}
 	}
+	if (is_neg)
+		neg(v);
 	return { st, std::errc {} };
 }
 
