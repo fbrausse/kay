@@ -194,8 +194,10 @@ from_chars(const char *rep, const char *end, Z &v, int base = 0,
 	return { st, std::errc {} };
 }
 
+namespace detail {
+
 inline std::from_chars_result
-from_chars(const char *rep, const char *end, Q &v, int base = 10)
+from_chars_Q_component(const char *rep, const char *end, Q &v, int base)
 {
 	const char *beg = rep;
 	bool is_neg = *rep == '-';
@@ -241,6 +243,25 @@ from_chars(const char *rep, const char *end, Q &v, int base = 10)
 	if (is_neg)
 		neg(v);
 	return { st, std::errc {} };
+}
+} /* namespace detail */
+
+inline std::from_chars_result
+from_chars(const char *rep, const char *end, Q &v, int base = 10)
+{
+	auto r = detail::from_chars_Q_component(rep, end, v, base);
+	if (r.ec != std::errc {})
+		return { rep, r.ec };
+	const char *s = r.ptr;
+	if (*s == '/') {
+		Q d;
+		r = detail::from_chars_Q_component(s+1, end, d, base);
+		if (r.ec == std::errc {}) {
+			s = r.ptr;
+			v /= d;
+		}
+	}
+	return { s, {} };
 }
 
 inline Q scale(Q v, ssize_t n)
