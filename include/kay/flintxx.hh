@@ -349,11 +349,21 @@ struct Q {
 	friend Q    pow(Q a, signed long e)     { fmpq_pow_si(a.get_fmpq_t(), a.get_fmpq_t(), e); return a; }
 
 	friend bool operator==(const Q &a, const Q &b) { return cmp(a, b) == 0; }
+#if __cpp_impl_three_way_comparison
+	friend std::strong_ordering operator<=>(const Q &a, const Q &b)
+	{
+		int c = cmp(a, b);
+		return c < 0 ? std::strong_ordering::less
+		     : c > 0 ? std::strong_ordering::greater
+		             : std::strong_ordering::equal;
+	}
+#else
 	friend bool operator!=(const Q &a, const Q &b) { return cmp(a, b) != 0; }
 	friend bool operator<=(const Q &a, const Q &b) { return cmp(a, b) <= 0; }
 	friend bool operator< (const Q &a, const Q &b) { return cmp(a, b) <  0; }
 	friend bool operator>=(const Q &a, const Q &b) { return cmp(a, b) >= 0; }
 	friend bool operator> (const Q &a, const Q &b) { return cmp(a, b) >  0; }
+#endif
 
 	/* TODO: rational reconstruction; flint-2.5.2 manual 25.10 */
 	/* TODO: continued fractions; flint-2.5.2 manual 25.12 */
