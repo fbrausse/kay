@@ -197,7 +197,7 @@ public:
 		if (isentire(v))
 			return 0;
 		if (std::isinf(lo(v)))
-			return DBL_MIN;
+			return -DBL_MAX;
 		if (std::isinf(hi(v)))
 			return DBL_MAX;
 		return lo(mid_enc(v));
