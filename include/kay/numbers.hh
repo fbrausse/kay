@@ -98,6 +98,8 @@ inline const mpq_class & to_mpq_class(const Q &q) { return q; }
 inline       mpq_class & to_mpq_class(      Q &q) { return q; }
 
 inline const mpq_class   inv(mpq_class q) { return 1/q; }
+inline       mpz_class   neg(const mpz_class &v) { return -v; }
+inline       mpq_class   neg(const mpq_class &v) { return -v; }
 
 inline       mp_bitcnt_t ctz(const mpz_class &v) { return mpz_scan1(v.get_mpz_t(), 0); }
 
@@ -142,8 +144,8 @@ inline std::from_chars_result
 from_chars(const char *rep, const char *end, Z &v, int base = 0,
            bool incl_sign = true, bool incl_prefix = true)
 {
-	assert(base > 1);
-	assert(base < 36);
+	assert(!base || base > 1);
+	assert(!base || base < 36);
 	if (rep == end)
 		return { rep, std::errc::invalid_argument };
 	bool is_neg = false;
@@ -160,7 +162,7 @@ from_chars(const char *rep, const char *end, Z &v, int base = 0,
 		if (end - rep >= 2 && st[0] == '0' && tolower(st[1]) == 'x') {
 			new_base = 16;
 			st += 2;
-		} else if (st[0] == '0') {
+		} else if (st[0] == '0' && st+1 < end) {
 			new_base = 8;
 			st += 1;
 		} else
@@ -168,7 +170,8 @@ from_chars(const char *rep, const char *end, Z &v, int base = 0,
 		if (base && base != new_base)
 			return { rep, std::errc::invalid_argument };
 		base = new_base;
-	}
+	} else if (!base)
+		base = 10;
 	if (st == end || !isdigit(*st))
 		return { rep, std::errc::invalid_argument };
 	v = 0;
@@ -263,6 +266,9 @@ from_chars(const char *rep, const char *end, Q &v, int base = 10)
 	}
 	return { s, {} };
 }
+
+inline std::string to_string(const Z &v, int base = 10) { return v.get_str(base); }
+inline std::string to_string(const Q &v, int base = 10) { return v.get_str(base); }
 
 inline Q scale(Q v, ssize_t n)
 {

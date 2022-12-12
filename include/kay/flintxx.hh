@@ -167,6 +167,11 @@ public:
 		}
 	}
 
+	long get_si() const
+	{
+		return COEFF_IS_MPZ(z) ? mpz_get_si(COEFF_TO_PTR(z)) : z;
+	}
+
 	friend Z   pow(Z a, unsigned long x) { fmpz_pow_ui(a.get_fmpz_t(), a.get_fmpz_t(), x); return a; }
 	friend Z   abs(Z a)                  { fmpz_abs(a.get_fmpz_t(), a.get_fmpz_t()); return a; }
 	friend Z   gcd(Z a, const Z &b)      { fmpz_gcd(a.get_fmpz_t(), a.get_fmpz_t(), b.get_fmpz_t()); return a; }

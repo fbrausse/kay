@@ -92,6 +92,16 @@ inline int mpfr_sub_q(mpfr_t r, mpfr_t a, const mpq_class &b, mpfr_rnd_t rnd)
 
 }
 
+#if __cpp_impl_three_way_comparison
+inline std::strong_ordering operator<=>(const mpq_class &a, const mpq_class &b)
+{
+	int c = cmp(a, b);
+	return c < 0 ? std::strong_ordering::less
+	     : c > 0 ? std::strong_ordering::greater
+		     : std::strong_ordering::equal;
+}
+#endif
+
 namespace std {
 
 template <>
