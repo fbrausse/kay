@@ -161,6 +161,7 @@ template <> struct integral_at_least_log_bytes<0> { using type = uint8_t; };
 template <> struct integral_at_least_log_bytes<1> { using type = uint16_t; };
 template <> struct integral_at_least_log_bytes<2> { using type = uint32_t; };
 template <> struct integral_at_least_log_bytes<3> { using type = uint64_t; };
+template <> struct integral_at_least_log_bytes<4> { using type = unsigned __int128_t; };
 
 template <size_t n>
 struct integral_at_least_bits
