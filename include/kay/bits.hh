@@ -20,35 +20,35 @@
 namespace kay {
 
 /* Fowler/Noll/Vo hash */
-template <typename T> struct fnv1_hash_params;
+template <size_t> struct fnv1_hash_params;
 
 /* from <http://www.isthe.com/chongo/tech/comp/fnv/index.html#FNV-param> */
-template <> struct fnv1_hash_params<uint32_t> {
+template <> struct fnv1_hash_params<4> {
 	constexpr static const uint32_t offset_basis = 2166136261U;
 	constexpr static const uint32_t fnv_prime = 16777619U;
 };
 
-template <> struct fnv1_hash_params<uint64_t> {
+template <> struct fnv1_hash_params<8> {
 	constexpr static const uint64_t offset_basis = 14695981039346656037U;
 	constexpr static const uint64_t fnv_prime = 1099511628211U;
 };
 
-template <typename T> struct fnv1_hash : fnv1_hash_params<T> {
+template <typename T> struct fnv1_hash : fnv1_hash_params<sizeof(T)> {
 
 	constexpr static T combine(T hsh, const T &v) noexcept
 	{
-		hsh *= fnv1_hash_params<T>::fnv_prime;
+		hsh *= fnv1_hash_params<sizeof(T)>::fnv_prime;
 		hsh ^= v;
 		return hsh;
 	}
 };
 
-template <typename T> struct fnv1a_hash : fnv1_hash_params<T> {
+template <typename T> struct fnv1a_hash : fnv1_hash_params<sizeof(T)> {
 
 	constexpr static T combine(T hsh, const T &v) noexcept
 	{
 		hsh ^= v;
-		hsh *= fnv1_hash_params<T>::fnv_prime;
+		hsh *= fnv1_hash_params<sizeof(T)>::fnv_prime;
 		return hsh;
 	}
 };
